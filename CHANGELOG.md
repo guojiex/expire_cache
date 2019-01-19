@@ -1,3 +1,3 @@
-## [0.0.1] - TODO: Add release date.
+## 1.0.0 - 2019.01.19
 
-* TODO: Describe initial release.
+* A usable simple expire cache.
