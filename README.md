@@ -1,4 +1,6 @@
-# dart_expire_cache
+# expire_cache
+
+![build status](https://travis-ci.com/guojiex/expire_cache.svg?branch=master)
 
 A dart package provides a generic cache that will expire according to time.
 

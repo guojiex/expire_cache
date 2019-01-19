@@ -1,6 +1,6 @@
 import 'package:test/test.dart';
 import 'package:fake_async/fake_async.dart';
-import 'package:expire_cache/dart_expire_cache.dart';
+import 'package:expire_cache/expire_cache.dart';
 
 void main() {
   group("Basic Cache Test", () {
