@@ -1,4 +1,6 @@
-# flutter_expire_cache
+# dart_expire_cache
+
+A dart package provides a generic cache that will expire according to time.
 
 If you want to implement 
 [SearchDelegate](https://github.com/flutter/flutter/search?q=SearchDelegate&unscoped_q=SearchDelegate) 

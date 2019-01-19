@@ -1,7 +1,7 @@
-name: flutter_expire_cache
-description: A new Flutter package provides a generic cache that will expire according to time.
+name: expire_cache
+description: A dart package provides a generic cache that will expire according to time.
 version: 0.0.1
-author:
+author: Jiexin Guo
 homepage:
 
 environment:
@@ -9,13 +9,10 @@ environment:
 
 dependencies:
   clock: ^1.0.1
-  flutter:
-    sdk: flutter
 
 dev_dependencies:
   fake_async: ^1.0.1
-  flutter_test:
-    sdk: flutter
+  test: ^1.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec

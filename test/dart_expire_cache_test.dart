@@ -1,6 +1,6 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:fake_async/fake_async.dart';
-import 'package:flutter_expire_cache/flutter_expire_cache.dart';
+import 'package:expire_cache/dart_expire_cache.dart';
 
 void main() {
   group("Basic Cache Test", () {
@@ -26,9 +26,9 @@ void main() {
         ExpireCache<String, String> cache = ExpireCache<String, String>(
             expireDuration: expireDuration, gcDuration: expireDuration);
         cache.set('key', 'value');
-        cache.get('key').then((String value)=>expect(value, 'value'));
+        cache.get('key').then((String value) => expect(value, 'value'));
         async.elapse(expireDuration);
-        cache.get('key').then((String value)=>expect(value, null));
+        cache.get('key').then((String value) => expect(value, null));
       });
     });
     test('test gc duration', () {
@@ -39,9 +39,9 @@ void main() {
             expireDuration: expireDuration, gcDuration: gcDuration);
         cache.set('key', 'value');
         async.elapse(expireDuration);
-        cache.get('key').then((String value)=>expect(value, 'value'));
+        cache.get('key').then((String value) => expect(value, 'value'));
         async.elapse(gcDuration - expireDuration);
-        cache.get('key').then((String value)=>expect(value, null));
+        cache.get('key').then((String value) => expect(value, null));
       });
     });
   });

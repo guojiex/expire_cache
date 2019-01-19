@@ -1,4 +1,4 @@
-library flutter_expire_cache;
+library expire_cache;
 
 import 'dart:core';
 import 'dart:async';
