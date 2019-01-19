@@ -19,7 +19,7 @@ void main() {
       expect(await cache.get('key'), null);
     });
   });
-  group("Test Expire", () {
+  group("Test Cache Expire", () {
     test('test cache entry gets expired', () {
       new FakeAsync().run((async) {
         final expireDuration = Duration(seconds: 20);
@@ -38,9 +38,9 @@ void main() {
         ExpireCache<String, String> cache = ExpireCache<String, String>(
             expireDuration: expireDuration, gcDuration: gcDuration);
         cache.set('key', 'value');
-        async.elapse(expireDuration);
+        async.elapse(expireDuration-Duration(seconds: 1));
         cache.get('key').then((String value) => expect(value, 'value'));
-        async.elapse(gcDuration - expireDuration);
+        async.elapse(Duration(seconds: 1));
         cache.get('key').then((String value) => expect(value, null));
       });
     });
