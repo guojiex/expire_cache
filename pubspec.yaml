@@ -1,8 +1,8 @@
 name: expire_cache
 description: A dart package provides a generic cache that will expire according to time.
 version: 0.0.1
-author: Jiexin Guo
-homepage:
+author: Jiexin Guo <jiexing.jg@gmail.com>
+homepage: https://github.com/guojiex/expire_cache
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
