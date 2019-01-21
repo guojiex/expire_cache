@@ -2,6 +2,7 @@ library expire_cache;
 
 import 'dart:core';
 import 'dart:async';
+import 'dart:collection';
 import 'package:clock/clock.dart';
 
 class _CacheEntry<V> {
@@ -10,32 +11,41 @@ class _CacheEntry<V> {
   _CacheEntry(this._cacheObject, this._createTime);
 }
 
-/// A cache. Its entries will expire after a given time period.
+/// A FIFO cache. Its entries will expire after a given time period.
 ///
-/// The cache entry will get remove either when Garbage Collection(GC), or a get
-/// function is called after it expire(but before GC).
+/// The cache entry will get remove when it is the first inserted entry and
+/// cache reach its limited size, or when it is expired.
 class ExpireCache<K, V> {
   /// The duration between entry create and expire. Default 120 seconds
   final Duration expireDuration;
 
-  /// The duration between each garbage collection. Default 180 seconds.
-  final Duration gcDuration;
-
   /// The clock that uses to compute create_timestamp and expire.
   final Clock clock;
-  Timer _expireTimer;
-  Map<K, _CacheEntry<V>> _cache = Map<K, _CacheEntry<V>>();
+
+  /// The upper size limit of cache(the cache's max entry number).
+  final int sizeLimit;
+  Map<K, _CacheEntry<V>> _cache = LinkedHashMap<K, _CacheEntry<V>>();
 
   ExpireCache(
       {this.clock = const Clock(),
       this.expireDuration = const Duration(seconds: 120),
-      this.gcDuration = const Duration(seconds: 180)});
+      this.sizeLimit = 100})
+      : assert(sizeLimit > 0);
 
   /// Sets the value associated with [key]. The Future completes with null when
   /// the operation is complete.
   Future<Null> set(K key, V value) async {
     _cache[key] = _CacheEntry(value, clock.now());
-    _expireTimer ??= Timer(gcDuration, _expireOutdatedEntries);
+    if (_cache.length > sizeLimit) {
+      removeFirst();
+    }
+  }
+
+  int length() => this._cache.length;
+
+  void removeFirst() {
+    final key = _cache.keys.first;
+    _cache.remove(key);
   }
 
   /// Removes the value associated with [key]. The Future completes with null

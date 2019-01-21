@@ -36,3 +36,16 @@ samples, guidance on mobile development, and a full API reference.
 ```bash
 pub run test test/
 ```
+
+## Example
+
+find our test file to see how to use.
+
+```dart
+final sizeLimit = 3;
+final expireDuration = Duration(seconds: 120);
+ExpireCache<int, int> cache = ExpireCache<int, int>(expireDuration: expireDuration, sizeLimit: 3);
+for (int i = 0; i < sizeLimit; i++) {
+    cache.set(i, i);
+print(cache.get(0)); // 0
+```
