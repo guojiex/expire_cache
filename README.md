@@ -15,7 +15,7 @@ https://github.com/flutter/flutter/issues/11655#issuecomment-412413030
 
 https://github.com/flutter/flutter/issues/26759
 
-Because this is related to search, it is valuable to expire the cache after a preiod of time, to give user fresh search result.
+Because this is related to search, it is valuable to expire the cache after a period of time, to give user fresh search result.
 And this is the goal for this package, to develop an expire by fix time cache.
 
 ## Getting Started
