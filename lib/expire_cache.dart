@@ -1,7 +1,5 @@
 library expire_cache;
 
-import 'dart:core';
-import 'dart:async';
 import 'dart:collection';
 import 'package:clock/clock.dart';
 

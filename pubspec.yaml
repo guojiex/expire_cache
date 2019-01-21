@@ -1,5 +1,5 @@
 name: expire_cache
-description: A dart package provides a generic cache that will expire according to time.
+description: A dart package provides a FIFO cache that will expire according to time.
 version: 1.0.1
 author: Jiexin Guo <jiexing.jg@gmail.com>
 homepage: https://github.com/guojiex/expire_cache
