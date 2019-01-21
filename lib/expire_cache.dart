@@ -52,10 +52,6 @@ class ExpireCache<K, V> {
     _cache.remove(key);
   }
 
-  Future<Null> _expireOutdatedEntries() async {
-    _cache.keys.where(isCacheEntryExpired).toList().forEach(_cache.remove);
-  }
-
   bool isCacheEntryExpired(K key) =>
       clock.now().difference(_cache[key]._createTime) > expireDuration;
 
