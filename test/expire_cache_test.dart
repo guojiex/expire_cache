@@ -38,26 +38,10 @@ void main() {
         ExpireCache<int, int> cache =
             ExpireCache<int, int>(expireDuration: expireDuration, sizeLimit: 3);
         for (int i = 0; i < sizeLimit; i++) {
-          cache.set(i, i);
-          expect(cache.length(), i + 1);
+          cache.set(i, i).then((Null) => expect(cache.length(), i + 1));
         }
-        cache.set(sizeLimit, sizeLimit);
-        expect(cache.length(), sizeLimit);
+        cache.set(sizeLimit, sizeLimit).then((Null)=>expect(cache.length(), sizeLimit));
         cache.get(0).then((int value) => expect(value, null));
-      });
-    });
-    test('test expire after get function called', () {
-      new FakeAsync().run((async) {
-        final sizeLimit = 3;
-        final expireDuration = Duration(seconds: 30);
-        final gcDuration = Duration(seconds: 5);
-        ExpireCache<int, int> cache = ExpireCache<int, int>(
-            expireDuration: expireDuration,
-            sizeLimit: 3,
-            gcDuration: gcDuration);
-        cache.set(1, 1);
-        async.elapse(expireDuration * 2);
-        cache.get(1).then((int) => expect(cache.length(), 0));
       });
     });
     test('test gc', () {
