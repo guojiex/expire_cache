@@ -2,7 +2,7 @@
 
 ![build status](https://travis-ci.com/guojiex/expire_cache.svg?branch=master)
 
-A dart package provides a generic cache that will expire according to time.
+A dart package provides FIFO cache and its entries will expire according to time.
 
 If you want to implement 
 [SearchDelegate](https://github.com/flutter/flutter/search?q=SearchDelegate&unscoped_q=SearchDelegate) 
