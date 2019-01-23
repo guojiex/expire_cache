@@ -1,3 +1,8 @@
+## 1.0.3 - 2019.01.23
+
+* Update sdk version as dev to be compatible with flutter.
+
+
 ## 1.0.2 - 2019.01.20
 
 * [Reimplement garbage collection.](https://github.com/guojiex/expire_cache/issues/2)

@@ -5,7 +5,7 @@ author: Jiexin Guo <jiexing.jg@gmail.com>
 homepage: https://github.com/guojiex/expire_cache
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.0.0-dev.61.0 <3.0.0"
 
 dependencies:
   clock: ^1.0.1
