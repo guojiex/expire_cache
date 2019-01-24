@@ -1,3 +1,8 @@
+## 1.0.5 - 2019.01.24
+
+* Remove blocking get and set methods.
+* Add method to handle the case when get and set are fired at the same time(and cache will be set twice).
+
 ## 1.0.4 - 2019.01.24
 
 * Add blocking get and set methods.

@@ -2,6 +2,21 @@ import 'package:test/test.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:expire_cache/expire_cache.dart';
 
+class _SearchObject {
+  int cacheSetCount = 0;
+  void getInflightOrSet(
+      ExpireCache<String, String> cache, String key, String value) async {
+    if(!cache.isKeyInFlightOrInCache(key)){
+      cache.markAsInFlight(key);
+    }else{
+      await cache.get(key);
+      return;
+    }
+    cacheSetCount++;
+    await cache.set(key, value);
+  }
+}
+
 void main() {
   group("Basic Cache Test", () {
     ExpireCache<String, String> cache;
@@ -17,6 +32,15 @@ void main() {
       cache.set('key', 'value');
       cache.invalidate('key');
       expect(await cache.get('key'), null);
+    });
+    /// https://github.com/flutter/flutter/issues/26759
+    /// Should only set the same key once, or there is race condition.
+    test('test cache concurrent write', () async {
+      _SearchObject temp = _SearchObject();
+      temp.getInflightOrSet(cache, 'key', 'value');
+      await temp.getInflightOrSet(cache, 'key', 'value');
+      // Cache should only be set once.
+      expect(temp.cacheSetCount, 1);
     });
   });
   group("Test Cache Expire", () {

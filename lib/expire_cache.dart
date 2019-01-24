@@ -30,7 +30,8 @@ class ExpireCache<K, V> {
 
   Map<K, _CacheEntry<V>> _cache = LinkedHashMap<K, _CacheEntry<V>>();
 
-  int setCount = 0;
+  /// Map of outstanding set used to prevent concurrent loads of the same key.
+  final _inflightSet = Map<K, Completer<V>>();
 
   ExpireCache(
       {this.clock = const Clock(),
@@ -44,13 +45,10 @@ class ExpireCache<K, V> {
   /// Sets the value associated with [key]. The Future completes with null when
   /// the operation is complete.
   Future<Null> set(K key, V value) async {
-    _cache[key] = _CacheEntry(value, clock.now());
-    if (_cache.length > sizeLimit) {
-      removeFirst();
+    if(_inflightSet.containsKey(key)){
+      _inflightSet[key].complete(value);
+      _inflightSet.remove(key);
     }
-  }
-
-  void blockingSet(K key, V value) {
     _cache[key] = _CacheEntry(value, clock.now());
     if (_cache.length > sizeLimit) {
       removeFirst();
@@ -77,14 +75,11 @@ class ExpireCache<K, V> {
     _cache.remove(key);
   }
 
-  void blockingInvalidate(K key) {
-    _cache.remove(key);
-  }
-
   bool isCacheEntryExpired(K key) =>
       clock.now().difference(_cache[key]._createTime) > expireDuration;
 
-  /// Returns the value associated with [key].
+  /// Returns the value associated with [key]. If the [key] is in flight, it
+  /// will get the [Future] of that in flight key.
   Future<V> get(K key) async {
     if (_cache.containsKey(key) && isCacheEntryExpired(key)) {
       invalidate(key);
@@ -93,17 +88,21 @@ class ExpireCache<K, V> {
     if (_cache.containsKey(key)) {
       return _cache[key]._cacheObject;
     }
+    if (_inflightSet.containsKey(key)){
+      return _inflightSet[key].future;
+    }
     return null;
   }
 
-  V blockingGet(K key) {
-    if (_cache.containsKey(key) && isCacheEntryExpired(key)) {
-      invalidate(key);
-      return null;
+  /// Mark a key as in flight. All the get function call on the same key after
+  /// this will get the same result.
+  Future<Null> markAsInFlight(K key) async {
+    if(!isKeyInFlightOrInCache(key)){
+      _inflightSet[key] = new Completer();
     }
-    if (_cache.containsKey(key)) {
-      return _cache[key]._cacheObject;
-    }
-    return null;
   }
+
+  bool containsKey(K key) => _cache.containsKey(key);
+
+  bool isKeyInFlightOrInCache(K key) => _inflightSet.containsKey(key)||_cache.containsKey(key);
 }
