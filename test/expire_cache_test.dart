@@ -18,12 +18,6 @@ void main() {
       cache.invalidate('key');
       expect(await cache.get('key'), null);
     });
-    test('test cache concurrent ', () async {
-      cache.set('key', 'value');
-      var res1 = cache.get('key');
-      if
-
-    });
   });
   group("Test Cache Expire", () {
     test('test cache entry gets expired', () {
