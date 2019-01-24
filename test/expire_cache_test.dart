@@ -18,6 +18,12 @@ void main() {
       cache.invalidate('key');
       expect(await cache.get('key'), null);
     });
+    test('test cache concurrent ', () async {
+      cache.set('key', 'value');
+      var res1 = cache.get('key');
+      if
+
+    });
   });
   group("Test Cache Expire", () {
     test('test cache entry gets expired', () {
@@ -40,7 +46,9 @@ void main() {
         for (int i = 0; i < sizeLimit; i++) {
           cache.set(i, i).then((Null) => expect(cache.length(), i + 1));
         }
-        cache.set(sizeLimit, sizeLimit).then((Null)=>expect(cache.length(), sizeLimit));
+        cache
+            .set(sizeLimit, sizeLimit)
+            .then((Null) => expect(cache.length(), sizeLimit));
         cache.get(0).then((int value) => expect(value, null));
       });
     });
