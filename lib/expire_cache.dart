@@ -77,6 +77,7 @@ class ExpireCache<K, V> {
   /// when the operation is complete.
   Future<Null> invalidate(K key) async {
     _cache.remove(key);
+    _inflightSet.remove(key);
   }
 
   bool isCacheEntryExpired(K key) =>
