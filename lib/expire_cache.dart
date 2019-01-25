@@ -14,7 +14,11 @@ class _CacheEntry<V> {
 /// A FIFO cache. Its entries will expire after a given time period.
 ///
 /// The cache entry will get remove when it is the first inserted entry and
-/// cache reach its limited size, or when it is expired(and get is called).
+/// cache reach its limited size, or when it is expired.
+///
+/// You can use markAsInFlight to indicate that there will be a set call after.
+/// Then before this key's corresponding value is set, all the other get to this
+/// key will wait on the same [Future].
 class ExpireCache<K, V> {
   /// The duration between entry create and expire. Default 120 seconds
   final Duration expireDuration;
@@ -45,7 +49,7 @@ class ExpireCache<K, V> {
   /// Sets the value associated with [key]. The Future completes with null when
   /// the operation is complete.
   Future<Null> set(K key, V value) async {
-    if(_inflightSet.containsKey(key)){
+    if (_inflightSet.containsKey(key)) {
       _inflightSet[key].complete(value);
       _inflightSet.remove(key);
     }
@@ -88,7 +92,7 @@ class ExpireCache<K, V> {
     if (_cache.containsKey(key)) {
       return _cache[key]._cacheObject;
     }
-    if (_inflightSet.containsKey(key)){
+    if (_inflightSet.containsKey(key)) {
       return _inflightSet[key].future;
     }
     return null;
@@ -97,12 +101,18 @@ class ExpireCache<K, V> {
   /// Mark a key as in flight. All the get function call on the same key after
   /// this will get the same result.
   Future<Null> markAsInFlight(K key) async {
-    if(!isKeyInFlightOrInCache(key)){
+    if (!isKeyInFlightOrInCache(key)) {
       _inflightSet[key] = new Completer();
     }
   }
 
+  void clear() {
+    _cache.clear();
+    _inflightSet.clear();
+  }
+
   bool containsKey(K key) => _cache.containsKey(key);
 
-  bool isKeyInFlightOrInCache(K key) => _inflightSet.containsKey(key)||_cache.containsKey(key);
+  bool isKeyInFlightOrInCache(K key) =>
+      _inflightSet.containsKey(key) || _cache.containsKey(key);
 }

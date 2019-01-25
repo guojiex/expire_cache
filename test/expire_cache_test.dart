@@ -6,9 +6,9 @@ class _SearchObject {
   int cacheSetCount = 0;
   void getInflightOrSet(
       ExpireCache<String, String> cache, String key, String value) async {
-    if(!cache.isKeyInFlightOrInCache(key)){
+    if (!cache.isKeyInFlightOrInCache(key)) {
       cache.markAsInFlight(key);
-    }else{
+    } else {
       await cache.get(key);
       return;
     }
@@ -33,6 +33,7 @@ void main() {
       cache.invalidate('key');
       expect(await cache.get('key'), null);
     });
+
     /// https://github.com/flutter/flutter/issues/26759
     /// Should only set the same key once, or there is race condition.
     test('test cache concurrent write', () async {

@@ -1,3 +1,8 @@
+## 1.0.6 - 2019.01.24
+
+* Update documents.
+* Added clear method.
+
 ## 1.0.5 - 2019.01.24
 
 * Remove blocking get and set methods.

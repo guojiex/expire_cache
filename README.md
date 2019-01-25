@@ -2,7 +2,9 @@
 
 ![build status](https://travis-ci.com/guojiex/expire_cache.svg?branch=master)
 
-A dart package provides FIFO cache and its entries will expire according to time.
+A dart package provides FIFO cache and its entries will expire according to time. Also proviodes
+mutex like method for search usage. Check out example/async_search_example.dart.
+
 
 If you want to implement 
 [SearchDelegate](https://github.com/flutter/flutter/search?q=SearchDelegate&unscoped_q=SearchDelegate) 
@@ -37,9 +39,11 @@ samples, guidance on mobile development, and a full API reference.
 pub run test test/
 ```
 
-## Example
+## Examples
 
 find our test file to see how to use.
+
+### Normal Cache Function
 
 ```dart
 final sizeLimit = 3;
@@ -48,4 +52,54 @@ ExpireCache<int, int> cache = ExpireCache<int, int>(expireDuration: expireDurati
 for (int i = 0; i < sizeLimit; i++) {
     cache.set(i, i);
 print(cache.get(0)); // 0
+```
+
+### Mutex like usage in Search
+
+```dart
+import 'package:expire_cache/expire_cache.dart';
+
+class _SearchObjectWithMutex {
+  static int cacheSetCount = 0;
+  static void getInflightOrSet(
+      ExpireCache<String, String> cache, String key, String value) async {
+    if (!cache.isKeyInFlightOrInCache(key)) {
+      cache.markAsInFlight(key);
+    } else {
+      await cache.get(key);
+      return;
+    }
+    cacheSetCount++;
+    await cache.set(key, value);
+  }
+}
+
+class _SearchObjectWithoutMutex {
+  static int cacheSetCount = 0;
+  static void getOrSet(
+      ExpireCache<String, String> cache, String key, String value) async {
+    if (await cache.get(key) != null) {
+      return;
+    }
+    cacheSetCount++;
+    await cache.set(key, value);
+  }
+}
+
+void main() async {
+  ExpireCache<String, String> cache = ExpireCache<String, String>();
+  _SearchObjectWithMutex.getInflightOrSet(cache, 'key', 'value');
+  await _SearchObjectWithMutex.getInflightOrSet(cache, 'key', 'value');
+  // Cache should only be set once.
+  print(
+      'with mutex ${_SearchObjectWithMutex.cacheSetCount}'); // 1, set is called only once.
+
+  cache.clear();
+  _SearchObjectWithoutMutex.getOrSet(cache, 'key', 'value2');
+  await _SearchObjectWithoutMutex.getOrSet(cache, 'key', 'value2');
+  // Cache should only be set once.
+  print(
+      'without mutex ${_SearchObjectWithoutMutex.cacheSetCount}'); // 2, because the get/set pair are run at the same time, both get will get null.
+}
+
 ```
