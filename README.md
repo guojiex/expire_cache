@@ -8,8 +8,7 @@ mutex like method for search usage. Check out example/async_search_example.dart.
 
 If you want to implement 
 [SearchDelegate](https://github.com/flutter/flutter/search?q=SearchDelegate&unscoped_q=SearchDelegate) 
-in your app, you will have to cache your search results if you don't want to call your search backend 
-for multiple times on the same query.
+in your app, you will have to cache your search results. Otherwise your call to search backend might run multiple times for the same query.
 
 See:
 
@@ -18,7 +17,7 @@ https://github.com/flutter/flutter/issues/11655#issuecomment-412413030
 https://github.com/flutter/flutter/issues/26759
 
 Because this is related to search, it is valuable to expire the cache after a period of time, to give user fresh search result.
-And this is the goal for this package, to develop an expire by fix time cache.
+And this package provide markAsInflight function, to make sure all the later get function gets the same result(if the key is the same).
 
 ## Getting Started
 
