@@ -1,3 +1,7 @@
+## 1.0.7 - 2020.06.27
+
+* Update dep versions.
+
 ## 1.0.6 - 2019.01.24
 
 * Update documents.
