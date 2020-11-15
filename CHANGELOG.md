@@ -1,3 +1,8 @@
+## 1.0.8 - 2020.11.15
+
+* update dart test dep version.
+* fix a wrong syntax when initializing gc timer callback.
+
 ## 1.0.7 - 2020.06.27
 
 * Update dep versions.

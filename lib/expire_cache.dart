@@ -43,7 +43,7 @@ class ExpireCache<K, V> {
       this.sizeLimit = 100,
       this.gcDuration = const Duration(seconds: 180)})
       : assert(sizeLimit > 0) {
-    Timer.periodic(gcDuration, (Timer t) => _expireOutdatedEntries);
+    Timer.periodic(gcDuration, (Timer t) => _expireOutdatedEntries());
   }
 
   /// Sets the value associated with [key]. The Future completes with null when

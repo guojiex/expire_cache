@@ -38,9 +38,39 @@ samples, guidance on mobile development, and a full API reference.
 pub run test test/
 ```
 
+or
+
+```bash
+dart pub test test/
+```
+
 ## Examples
 
 find our test file to see how to use.
+
+### Search Example
+
+```
+class CustomSearchDataSource {
+// FIFO TTL cache to cache search result.
+final ExpireCache<SearchQuery, SearchResults> _cache =
+      ExpireCache<SearchQuery, SearchResults>();
+
+  Future<SearchResults> cachedSearch(final SearchQuery searchQuery) async {
+    if (!_cache.isKeyInFlightOrInCache(searchQuery)) {
+      _cache.markAsInFlight(searchQuery);
+    } else {
+      return await _cache.get(searchQuery);
+    }
+    // searchQuery.runSearch is the real search call to backend
+    final result = await searchQuery.runSearch(this.api);
+    _cache.set(searchQuery, result);
+    print('call search backend');
+    return result;
+  }
+
+}
+```
 
 ### Normal Cache Function
 
