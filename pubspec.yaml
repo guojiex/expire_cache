@@ -1,7 +1,7 @@
 name: expire_cache
 description: A dart package provides FIFO cache and its entries will expire according to time. Also proviodes
   mutex like method for search usage. Check out example/async_search_example.dart.
-version: 1.0.81
+version: 1.0.8
 homepage: https://github.com/guojiex/expire_cache
 
 environment:
