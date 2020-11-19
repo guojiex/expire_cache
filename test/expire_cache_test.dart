@@ -4,6 +4,7 @@ import 'package:expire_cache/expire_cache.dart';
 
 class _SearchObject {
   int cacheSetCount = 0;
+
   void getInflightOrSet(
       ExpireCache<String, String> cache, String key, String value) async {
     if (!cache.isKeyInFlightOrInCache(key)) {
@@ -23,6 +24,10 @@ void main() {
     setUp(() async {
       cache = ExpireCache<String, String>();
     });
+    test('test empty cache', () async {
+      expect(await cache.get('not exist'), null);
+      expect(cache.length(), 0);
+    });
     test('test cache set get', () async {
       cache.set('key', 'value');
       expect(await cache.get('key'), 'value');
@@ -31,6 +36,12 @@ void main() {
     test('test cache invalidate', () async {
       cache.set('key', 'value');
       cache.invalidate('key');
+      expect(await cache.get('key'), null);
+    });
+    test('test cache invalidate inflight', () async {
+      cache.markAsInFlight('key');
+      cache.invalidate('key');
+      expect(cache.inflightLength(), 0);
       expect(await cache.get('key'), null);
     });
 
@@ -47,13 +58,35 @@ void main() {
   group("Test Cache Expire", () {
     test('test cache entry gets expired', () {
       new FakeAsync().run((async) {
-        final expireDuration = Duration(seconds: 20);
+        int expireSeconds = 20;
+        final expireDuration = Duration(seconds: expireSeconds);
+        final halfExpireDuration =
+            Duration(seconds: (expireSeconds / 2).round());
         ExpireCache<String, String> cache =
             ExpireCache<String, String>(expireDuration: expireDuration);
         cache.set('key', 'value');
         cache.get('key').then((String value) => expect(value, 'value'));
-        async.elapse(expireDuration);
-        cache.get('key').then((String value) => expect(value, null));
+        async.elapse(halfExpireDuration);
+        cache.set('key2', 'value2');
+        cache
+            .get('key')
+            .then((String value) => expect(value, null))
+            .then((value) => expect(cache.length(), 1));
+      });
+    });
+    test('test inflight entry gets expired', () {
+      new FakeAsync().run((async) {
+        final expireDuration = Duration(seconds: 10);
+        final gcDuration = Duration(seconds: 15);
+        ExpireCache<String, String> cache = ExpireCache<String, String>(
+            expireDuration: expireDuration, gcDuration: gcDuration);
+        cache
+            .markAsInFlight('key')
+            .then((value) => expect(cache.inflightLength(), 1));
+        async.elapse(gcDuration);
+        // Not sure why isKeyInFlightOrInCache will only work after a async call
+        cache.get('key').then(
+            (value) => expect(cache.isKeyInFlightOrInCache('key'), false));
       });
     });
     test('test size limit', () {
@@ -73,13 +106,10 @@ void main() {
     });
     test('test gc', () {
       new FakeAsync().run((async) {
-        final sizeLimit = 3;
         final expireDuration = Duration(seconds: 10);
         final gcDuration = Duration(seconds: 20);
         ExpireCache<int, int> cache = ExpireCache<int, int>(
-            expireDuration: expireDuration,
-            sizeLimit: 3,
-            gcDuration: gcDuration);
+            expireDuration: expireDuration, gcDuration: gcDuration);
         cache.set(1, 1).then((Null) {
           async.elapse(gcDuration + Duration(seconds: 1));
           expect(cache.length(), 0);

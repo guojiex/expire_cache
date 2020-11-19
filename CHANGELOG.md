@@ -1,3 +1,8 @@
+## 1.0.9 - 2020.11.18
+
+* Update _expireOutdatedEntries to be more effective(take advantage of using a LinkedHashMap).
+* Now the inflight set will also expire according to expireDuration. Fixed https://github.com/guojiex/expire_cache/issues/5
+
 ## 1.0.8 - 2020.11.15
 
 * update dart test dep version.
