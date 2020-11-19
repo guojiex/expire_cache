@@ -74,6 +74,21 @@ void main() {
             .then((value) => expect(cache.length(), 1));
       });
     });
+    test('test inflight entry not expire', () {
+      new FakeAsync().run((async) {
+        final expireDuration = Duration(seconds: 10);
+        final gcDuration = Duration(seconds: 5);
+        ExpireCache<String, String> cache = ExpireCache<String, String>(
+            expireDuration: expireDuration, gcDuration: gcDuration);
+        cache
+            .markAsInFlight('key')
+            .then((value) => expect(cache.inflightLength(), 1));
+        async.elapse(gcDuration);
+        // Not sure why isKeyInFlightOrInCache will only work after a async call
+        cache.get('key').then(
+                (value) => expect(cache.isKeyInFlightOrInCache('key'), true));
+      });
+    });
     test('test inflight entry gets expired', () {
       new FakeAsync().run((async) {
         final expireDuration = Duration(seconds: 10);
