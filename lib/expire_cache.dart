@@ -61,7 +61,7 @@ class ExpireCache<K, V> {
   /// Setting the same key should make that key the latest key in [_cache].
   Future<Null> set(K key, V value) async {
     if (_inflightSet.containsKey(key)) {
-      _inflightSet[key]._completer.complete(value);
+      _inflightSet[key]!._completer.complete(value);
       _inflightSet.remove(key);
     }
     // Removing the key and adding it again will make it be last in the
@@ -112,16 +112,16 @@ class ExpireCache<K, V> {
   }
 
   bool isCacheEntryExpired(K key) =>
-      clock.now().difference(_cache[key]._createTime) > expireDuration;
+      clock.now().difference(_cache[key]!._createTime) > expireDuration;
 
   bool isInflightEntryExpire(K key) =>
-      clock.now().difference(_inflightSet[key]._createTime) > expireDuration;
+      clock.now().difference(_inflightSet[key]!._createTime) > expireDuration;
 
   /// Returns the value associated with [key].
   ///
   /// If the [key] is inflight, it will get the [Future] of that inflight key.
   /// Will invalidate the entry if it is expired.
-  Future<V> get(K key) async {
+  Future<V?> get(K key) async {
     if (_cache.containsKey(key) && isCacheEntryExpired(key)) {
       _cache.remove(key);
       return null;
@@ -130,7 +130,7 @@ class ExpireCache<K, V> {
       _inflightSet.remove(key);
       return null;
     }
-    return _cache[key]?._cacheObject ?? _inflightSet[key]?._completer?.future;
+    return _cache[key]?._cacheObject ?? _inflightSet[key]?._completer.future;
   }
 
   /// Mark a key as inflight. Calling this again or on a already cached entry

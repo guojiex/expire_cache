@@ -5,7 +5,7 @@ import 'package:expire_cache/expire_cache.dart';
 class _SearchObject {
   int cacheSetCount = 0;
 
-  void getInflightOrSet(
+  Future<Null> getInflightOrSet(
       ExpireCache<String, String> cache, String key, String value) async {
     if (!cache.isKeyInFlightOrInCache(key)) {
       cache.markAsInFlight(key);
@@ -20,7 +20,7 @@ class _SearchObject {
 
 void main() {
   group("Basic Cache Test", () {
-    ExpireCache<String, String> cache;
+    late ExpireCache<String, String> cache;
     setUp(() async {
       cache = ExpireCache<String, String>();
     });
@@ -65,12 +65,12 @@ void main() {
         ExpireCache<String, String> cache =
             ExpireCache<String, String>(expireDuration: expireDuration);
         cache.set('key', 'value');
-        cache.get('key').then((String value) => expect(value, 'value'));
+        cache.get('key').then((String? value) => expect(value, 'value'));
         async.elapse(halfExpireDuration);
         cache.set('key2', 'value2');
         cache
             .get('key')
-            .then((String value) => expect(value, null))
+            .then((String? value) => expect(value, null))
             .then((value) => expect(cache.length(), 1));
       });
     });
@@ -82,7 +82,7 @@ void main() {
             expireDuration: expireDuration, gcDuration: gcDuration);
         cache
             .markAsInFlight('key')
-            .then((value) => expect(cache.inflightLength(), 1));
+            .then(((value) => expect(cache.inflightLength(), 1)));
         async.elapse(gcDuration);
         // Not sure why isKeyInFlightOrInCache will only work after a async call
         cache.get('key').then(
@@ -97,7 +97,7 @@ void main() {
             expireDuration: expireDuration, gcDuration: gcDuration);
         cache
             .markAsInFlight('key')
-            .then((value) => expect(cache.inflightLength(), 1));
+            .then(((value) => expect(cache.inflightLength(), 1)));
         async.elapse(gcDuration);
         // Not sure why isKeyInFlightOrInCache will only work after a async call
         cache.get('key').then(
@@ -111,12 +111,12 @@ void main() {
         ExpireCache<int, int> cache =
             ExpireCache<int, int>(expireDuration: expireDuration, sizeLimit: 3);
         for (int i = 0; i < sizeLimit; i++) {
-          cache.set(i, i).then((Null) => expect(cache.length(), i + 1));
+          cache.set(i, i).then(((Null) => expect(cache.length(), i + 1)));
         }
         cache
             .set(sizeLimit, sizeLimit)
-            .then((Null) => expect(cache.length(), sizeLimit));
-        cache.get(0).then((int value) => expect(value, null));
+            .then(((Null) => expect(cache.length(), sizeLimit)));
+        cache.get(0).then((int? value) => expect(value, null));
       });
     });
     test('test gc', () {

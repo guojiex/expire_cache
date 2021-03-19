@@ -1,3 +1,7 @@
+## 2.0.0 - 2021.03.18
+
+* Fix Null Safety Migration. Fix https://github.com/guojiex/expire_cache/issues/7.
+
 ## 1.0.9 - 2020.11.18
 
 * Update _expireOutdatedEntries to be more effective(take advantage of using a LinkedHashMap).

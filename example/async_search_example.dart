@@ -2,7 +2,7 @@ import 'package:expire_cache/expire_cache.dart';
 
 class _SearchObjectWithMutex {
   static int cacheSetCount = 0;
-  static void getInflightOrSet(
+  static Future<Null> getInflightOrSet(
       ExpireCache<String, String> cache, String key, String value) async {
     if (!cache.isKeyInFlightOrInCache(key)) {
       cache.markAsInFlight(key);
@@ -17,7 +17,7 @@ class _SearchObjectWithMutex {
 
 class _SearchObjectWithoutMutex {
   static int cacheSetCount = 0;
-  static void getOrSet(
+  static Future<Null> getOrSet(
       ExpireCache<String, String> cache, String key, String value) async {
     if (await cache.get(key) != null) {
       return;
