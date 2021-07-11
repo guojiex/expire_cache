@@ -1,3 +1,7 @@
+## 2.0.1 - 2021.07.11
+
+* Add getter for all private cache objects. Fixed https://github.com/guojiex/expire_cache/issues/8
+
 ## 2.0.0 - 2021.03.18
 
 * Fix Null Safety Migration. Fix https://github.com/guojiex/expire_cache/issues/7.

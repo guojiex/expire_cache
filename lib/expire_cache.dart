@@ -5,18 +5,26 @@ import 'dart:async';
 import 'dart:collection';
 import 'package:clock/clock.dart';
 
-class _CacheEntry<V> {
+class CacheEntry<V> {
   final _cacheObject;
   final DateTime _createTime;
 
-  _CacheEntry(this._cacheObject, this._createTime);
+  CacheEntry(this._cacheObject, this._createTime);
+
+  DateTime get createTime => _createTime;
+
+  get cacheObject => _cacheObject;
 }
 
-class _InflightEntry<V> {
+class InflightEntry<V> {
   final Completer<V> _completer;
   final DateTime _createTime;
 
-  _InflightEntry(this._completer, this._createTime);
+  InflightEntry(this._completer, this._createTime);
+
+  DateTime get createTime => _createTime;
+
+  Completer<V> get completer => _completer;
 }
 
 /// A FIFO cache. Its entries will expire after a given time period.
@@ -41,10 +49,12 @@ class ExpireCache<K, V> {
   final int sizeLimit;
 
   /// The internal cache that stores the cache entries.
-  final _cache = LinkedHashMap<K, _CacheEntry<V>>();
+  final _cache = LinkedHashMap<K, CacheEntry<V>>();
+
+  get cache => _cache;
 
   /// Map of outstanding set used to prevent concurrent loads of the same key.
-  final _inflightSet = LinkedHashMap<K, _InflightEntry<V>>();
+  final _inflightSet = LinkedHashMap<K, InflightEntry<V>>();
 
   ExpireCache(
       {this.clock = const Clock(),
@@ -69,7 +79,7 @@ class ExpireCache<K, V> {
     if (_cache.containsKey(key)) {
       _cache.remove(key);
     }
-    _cache[key] = _CacheEntry(value, clock.now());
+    _cache[key] = CacheEntry(value, clock.now());
     if (_cache.length > sizeLimit) {
       removeFirst();
     }
@@ -140,7 +150,7 @@ class ExpireCache<K, V> {
   /// result.
   Future<Null> markAsInFlight(K key) async {
     if (!isKeyInFlightOrInCache(key)) {
-      _inflightSet[key] = _InflightEntry(new Completer(), clock.now());
+      _inflightSet[key] = InflightEntry(new Completer(), clock.now());
     }
   }
 
@@ -153,4 +163,6 @@ class ExpireCache<K, V> {
 
   bool isKeyInFlightOrInCache(K key) =>
       _inflightSet.containsKey(key) || _cache.containsKey(key);
+
+  get inflightSet => _inflightSet;
 }
